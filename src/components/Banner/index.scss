@@ -1,0 +1,27 @@
+$banner_height : 4rem;
+.banner_img {
+    width: 100%;
+    height: $banner_height;
+}
+.banner_item {
+    width: 100%;
+    height: $banner_height;
+    position: relative;
+}
+.banner_swipe {
+    width: 100%;
+    height: $banner_height;
+}
+.swipe-container {
+    height: $banner_height;
+}
+.mint-swipe-indicators {
+    .mint-swipe-indicator {
+        background: #000;
+        opacity: 0.4;
+    }
+    .is-active {
+        background: #fff;
+        opacity: 0.8;
+    }
+}

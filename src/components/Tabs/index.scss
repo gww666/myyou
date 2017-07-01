@@ -1,0 +1,31 @@
+.tabs_container {
+    height: 1.8rem;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fcfcfc;
+    border-top: 1px solid #f0f0f0; 
+
+
+    >div {
+        height: 100%;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.28rem;
+        flex: 1;
+
+        .iconfont {
+            font-size: 0.68rem;
+        }
+        .active {
+
+        }
+
+    }
+}

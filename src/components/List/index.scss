@@ -1,0 +1,38 @@
+.list_right {
+    flex: 1;
+    margin-left: 0.56rem;
+
+}
+
+.count {
+    display: flex;
+    font-size: 0.32rem;
+    color: #bcbcbc;
+
+    .cinemaCount {
+        margin-right: 0.6rem;
+
+        font {
+            color: #4abdcf;
+        }
+    }
+    .watchCount {
+        font {
+            color: #4abdcf;
+        }
+    }
+
+}
+
+.intro {
+    color: #a7a7a7;
+    margin-top: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+.loadmore_container {
+    // position: absolute;
+    // bottom: 1.8rem;
+    // left: 0;
+    // width: 100%;
+    // top: 0;
+}
