@@ -5,11 +5,11 @@
             <scroll class="scroll"
                 :list="filmList"
                 @mscroll="handleMScroll"
-                @mscrollEnd="handleMScrollEnd"
+                @mtouchend="handleMTouchend"
                 @mscrollStart="handleMScrollStart"
                 :probeType="probeType"
                 :listenScroll="true"
-                :listenScrollEnd="true"
+                :listenTouchend="true"
                 :listenScrollStart="true"
                 ref="scroll"
                 :class="{'scroll_refreshing': loadingRefreshActive, 'scroll_refreshed': !isRefreshing}" 
@@ -25,10 +25,11 @@
                     <div class="list_container">
                         <film-list :list="filmList"></film-list>
                     </div>
+                    <!-- 加载更多提示框 -->
+                    <div class="loadmore_cintainer" ref="loading_more">
+                        <loading :visible="isLoadMoreing" :hasMore="hasMore" ></loading>
+                    </div>
                 </div>
-
-                <!-- 加载更多提示框 -->
-                
             </scroll>
         </div>
 </template>
@@ -41,10 +42,13 @@
     import axios from "axios";
     import { Loadmore } from 'mint-ui';
     import Scroll from "../../../components/Scroll/Scroll";
+    import Loading from "../../../components/Loading";
     // import {mapState} from "vuex";
 
     const htmlFontSize = document.documentElement.style.fontSize.slice(0, -2);
     const PROTECT_TIME = 8 * 1000;
+    const SCREEN_HEIGHT = window.screen.height;
+    const TABS_HEIGHT = htmlFontSize * 1.8;
     // let LoadingRefreshHeight = 2 * htmlFontSize;
     
 
@@ -69,7 +73,10 @@
                 loadingRefreshActive: false,
                 scrollChecked: false,
                 pauseY: 0,
-                isProtected: false
+                isProtected: false,
+                loadingMoreVisible: false,
+                isLoadMoreing: false,
+                
             }
         },
         created () {
@@ -111,62 +118,87 @@
                 .then(data => {
                     console.log(data);
                     if (data.status === 200) {
-                        this.filmList = data.data.data.films;
                         //判断有无更多数据
                         let total = data.data.data.page.total;
                         let current = data.data.data.page.current;
                         this.hasMore = current === total ? false : true;
                         if (callback) {
-                            callback();
+                            callback(data.data.data);
+                        } else {
+                            this.filmList = data.data.data.films;
                         }
+                        
+                        // if (callback) {
+                        //     callback();
+                        // }
                     }
                     
                 })
                 .catch(error => console.log(error));
             },
             handleMScroll (pos) {
-                // console.log(pos.y);
+                // ------判断是否执行下拉刷新------
+                // scrollEnd：手指是否离开屏幕
+                // scrollChecked：一旦进入判断，该次操作只执行一次，在请求结束后重置为false
+                // pos.y >= this.LoadingRefreshHeight：设立一个临界值，只有当下拉距离大于这个数值才会触发刷新操作
+                // isProtected：刷新保护，一段时间内重复下拉不会刷新，保护时间由---常量PROTECT_TIME---决定
                 if (this.scrollEnd && !this.scrollChecked && pos.y >= this.LoadingRefreshHeight && !this.isProtected) {
-                // if (this.scrollEnd && !this.scrollChecked) {
                     if (!this.isRefreshing) {
                         this.isRefreshing = true;
                         this.isProtected = true;
                         console.log("进行下拉刷新操作");
                             this.page = 1;
-                            let callback = () => {
+                            let callback = (data) => {
                                 this.isRefreshing = false;
                                 this.scrollEnd = false;
                                 this.scrollChecked = false;
                                 this.$refs.scrollContainer.style.transform = `translate(0px, 0px) translateZ(0px)`;
                                 this.$refs.scrollContainer.style.transition = `transform 0.4s`;
+                                this.filmList = data.films;
                                 console.log("下拉刷新操作完成");
                                 setTimeout(() => {
                                     this.isProtected = false;
-                                    console.log("保护解除");
+                                    console.log("保护解除，可以请求数据");
                                 }, PROTECT_TIME)
                             }
                             this.getListData(callback);
                         // }, 2000);
                     }
                     this.$refs.scrollContainer.style.transform = `translate(0px, ${this.LoadingRefreshHeight}px) translateZ(0px)`;
-                    // this.pauseY = pos.y;
-                    // this.$refs.scroll.$el.style.top = pos.y + "px";
-                    // this.scrollChecked = true;
-                    // this.scrollEnd = false;
-
                 }
-                this.scrollY = pos.y;
-                //判断当pos.y偏移量大于loadingHeight时才触发刷新操作
+
+                //------判断是否执行上拉加载更多------
+                // console.log(pos.y);
+                //
+                // console.log(this.top);
+                
+                // console.log(this.$refs.loading_more.getBoundingClientRect().top - parseInt(this.top));
+                // console.log(this.$refs.loading_more.offsetTop + pos.y + parseInt(this.top));
+                // console.log(this.$refs.loading_more.offsetParent);
+                // console.log(SCREEN_HEIGHT);
+                // if (this.$refs.loading_more.offsetTop + pos.y + parseInt(this.top) < SCREEN_HEIGHT) {
+                if (this.$refs.loading_more.getBoundingClientRect().top + TABS_HEIGHT < SCREEN_HEIGHT) {
+                    // this.$refs.loading_more.getBoundingClientRect().top + pos.y
+                    // console.log(111111111);
+                    if (!this.isLoadMoreing && this.hasMore) {
+                        //进行加载更多的操作
+                        this.handlePullToLoadMore();
+                    }
+                }
+                
+
 
             },
-            handleMScrollEnd (pos) {
+            handleMTouchend (pos) {
                 // console.log(pos.y);
                 // if (pos.y > )
                 // console.log("滑动结束");
                 this.scrollEnd = true;
+
+                // console.log(pos.y);
             },
             handleMScrollStart (pos) {
-                console.log("start");
+                // console.log("start");
                 // this.$refs.scrollContainer.style.transform = `translate(0px, ${this.pauseY}px) translateZ(0px)`;
             },
             //固定loading圈圈位置
@@ -184,6 +216,12 @@
             //处理上拉加载更多事件
             handlePullToLoadMore () {
                 this.page = this.page + 1;
+                this.isLoadMoreing = true;//置为正在加载状态
+                let callback = (data) => {
+                    this.filmList = this.filmList.concat(data.films);
+                    this.isLoadMoreing = false;
+                }
+                this.getListData(callback);
 
             }
         },
@@ -205,7 +243,8 @@
             "banner" : Banner,
             "film-list" : List,
             "mt-loadmore" : Loadmore,
-            "scroll" : Scroll
+            "scroll" : Scroll,
+            "loading": Loading
         }
     }
 </script>
