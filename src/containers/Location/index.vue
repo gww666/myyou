@@ -4,13 +4,32 @@
             <header class="title">
                 <back-icon class="back_icon"></back-icon>
                 <span>城市选择</span>
+                <div class="border"></div>
             </header>
             <!-- 城市列表 -->
-
+            <scroll
+                ref="scroll"
+                class="scroll"
+                :list="resList"
+                :listenScroll="true"
+                @mscroll="handleMScroll"
+                :probeType="3">
+                <div>
+                    <div v-for="(item, index) in resList" ref="cityList">
+                        <dl>
+                            <dt class="city_title">{{item.title}}</dt>
+                            <dd v-for="(city, index2) in item.items" data-id="city.id" class="city_name">{{city.name}}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </scroll>
             
             <!-- shortcut -->
-            <ul class="shortcut">
-                <li v-for="(item, index) in shortcutList" :key="index">
+            <ul class="shortcut" ref="shortcut" @touchmove="handleShortcutTouchMove">
+                <li v-for="(item, index) in shortcutList" 
+                    :key="index" 
+                    :class="{'active' : anchorIndex === index}"
+                    @touchstart="handleShortcutTouch($event, index)">
                     {{item}}
                 </li>
             </ul>
@@ -21,6 +40,7 @@
 <script>
 
     import BackIcon from "../../components/BackIcon";
+    import Scroll from "../../components/Scroll/Scroll";
     import {city} from "../../api";
     import axios from "axios";
 
@@ -35,11 +55,14 @@
                     {name: "广州", id : 13},
                     {name: "上海", id : 11},
                     {name: "北京", id : 12},
-                ]
+                ],
+                scrollY : -1,
+                anchorIndex: 0,
             }
         },
         components : {
-            "back-icon" : BackIcon
+            "back-icon" : BackIcon,
+            "scroll": Scroll
         },
         computed : {
             pageHeight () {
@@ -47,6 +70,7 @@
             }
         },
         methods : {
+            //axios请求城市列表信息
             getCities () {
                 let url = city;
                 axios.get(url)
@@ -113,10 +137,41 @@
                 });
                 this.shortcutList.unshift("热");
 
+            },
+            //处理scroll事件
+            handleMScroll (pos) {
+                this.scrollY = pos.y;
+                console.log(pos.y);
+
+            },
+            handleShortcutTouch (event, index) {
+                console.log(event.touches[0].pageY);
+                this.anchorIndex = index;
+                // console.log(this.$refs.cityList);
+                this.$refs.scroll.scrollToElement(this.$refs.cityList[index + 1], 0);
+
+            },
+            handleShortcutTouchMove (event) {
+                let pageY = event.touches[0].pageY;
+                // console.log(pageY);
+                let height = event.target.offsetHeight;
+                let currentAnchorIndex = Math.ceil(pageY / height);
+                this.anchorIndex = currentAnchorIndex;
+                // console.log(currentAnchorIndex);
+            }
+        },
+        watch : {
+            scrollY (newY) {
+
             }
         },
         created () {
+            this.probeType = 3;
             this.getCities();
+            setTimeout(() => {
+
+            }, 20);
+
         }
     }
 </script>
@@ -127,10 +182,11 @@
     .location_container {
         position: absolute;
         z-index: 4;
-        background: #f8f8f8;
+        // background: #f8f8f8;
         left: 0;
         top: 0;
         width: 100%;
+        
     }
     .title {
         height: 1.5rem;
@@ -140,6 +196,18 @@
         font-size: 0.5rem;
         color: #5e5e5e;
         background: #fff;
+        position: relative;
+        
+
+        .border {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-bottom: 1px solid #bbb;
+            width: 100%;
+            // z-index: 4;
+            
+        }
     }
 
     //快速入口
@@ -161,8 +229,42 @@
             display: flex;
             align-items: center;
             flex: 1;
+            width: 100%;
+            justify-content: center;
+        }
+        .active {
+            color: #444;
         }
     }
+    //scroll
+    .scroll {
+        position: absolute;
+        top: 1.5rem;
+        bottom: 0;
+        width: 100%;
+        left: 0;
+        font-size: 0.5rem;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    //城市分栏标题
+    .city_title {
+        padding: 0.3rem 0.4rem;
+        background: #f0f0f0;
+        font-size: 0.4rem;
+        color: #444;
+    }
+    .city_name {
+        padding: 0.4rem 0;
+        margin-left: 0.4rem;
+        border-bottom: 1px solid #bbb;
+
+        &:last-of-type {
+            border: 0;
+        }
+    }
+    
 
     //转场动画
     .slide-enter-active {
