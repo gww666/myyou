@@ -1,7 +1,10 @@
 <template>
     <div class="list_container">
         <div v-for="(item, index) in list" :key="index" class="list_item">
-            <img :src="item.poster.origin" alt="" class="list_img">
+            <div class="img_container">
+                <img :src="item.poster.origin" alt="" class="list_img">
+                <border-bottom height="0.18rem" backgroundSize="0.35rem"></border-bottom>
+            </div>
             <div class="list_right">
                 <p class="title">
                     <span class="name">{{item.name}}</span>
@@ -12,7 +15,7 @@
                     <span class="cinemaCount"><font>{{item.cinemaCount}}</font>家影院正在上映</span>
                     <span class="watchCount"><font>{{item.watchCount}}</font>人购票</span>
                 </p>
-                <p v-if="listType === 'will'">{{item.premiereAt}}</p>
+                <p v-if="listType === 'will'" class="premiereAt">上映日期：{{item.premiereAt | watchTime}}</p>
             </div>
         </div>
     </div>
@@ -24,12 +27,15 @@
         //     <div>
     import Scroll from "../Scroll/Scroll";
     import "./index.scss";
-    import { Loadmore } from 'mint-ui';
+    // import { Loadmore } from 'mint-ui';
+    import BorderBottom from "../BorderBottom";
     export default {
         props : {
             list : {
                 type : Array,
-                default : []
+                default : function () {
+                    return [];
+                }
             },
             listType : {
                 type : String,
@@ -41,17 +47,29 @@
 
             }
         },
+        methods : {
+            // watchTime (time) {
+            //     let date = new Date(time);
+            //     let year = date.getFullYear();
+            //     // let month = 
+            //     return `${year}-${(date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1)}-${date.getDate()}`;
+            // }
+        },
         computed : {
+            
+        },
+        components : {
+            "scroll" : Scroll,
+            "border-bottom" : BorderBottom
+        },
+        filters : {
             watchTime (time) {
                 let date = new Date(time);
                 let year = date.getFullYear();
+                let date_day = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
                 // let month = 
-                return `${year}-${(date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1)}-${date.getDate()}`;
+                return `${year}-${(date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1)}-${date_day}`;
             }
-        },
-        components : {
-            "mt-loadmore" : Loadmore,
-            "scroll" : Scroll
         }
     }
 </script>
@@ -71,6 +89,10 @@
         border-bottom: 1px solid #f0f0f0;
         padding: .5rem 0.3rem;
     }
+
+    .img_container {
+        position: relative;
+    }
     .list_img {
         width: 1.83rem;
         height: 2.5rem;
@@ -86,5 +108,8 @@
             color: #ea8b6b;
 
         }
+    }
+    .premiereAt {
+        color: #ff8561;
     }
 </style>

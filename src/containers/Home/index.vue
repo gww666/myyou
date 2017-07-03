@@ -25,8 +25,13 @@
                 </span>
             </nav>
         </div>
+        <swiper ref="mySwiper" class="swiper_container" :options="swiperOption">
+            <!-- slides -->
+            <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}"><hot-page :top="pageContainerTop" ></hot-page></swiper-slide>
+            <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}"><will-page :top="pageContainerTop" ></will-page></swiper-slide>
+            <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}">777777</swiper-slide>
+        </swiper>
 
-        <hot-page :top="pageContainerTop"></hot-page>
         <footer>
             <footer-tabs></footer-tabs>
         </footer>
@@ -35,15 +40,24 @@
 </template>
 
 <script>
-
-        //     <div class="page_container" :style="{'top' : pageContainerTop}">
-        //     <div class="page_scroll">
-        //         <hot-page></hot-page>
-        //     </div>
-        // </div>
+        // <carousel>
+        //     <carousel-item>
+        //         <hot-page :top="pageContainerTop"></hot-page>
+        //     </carousel-item>
+        //     <carousel-item>
+        //         <will-page :top="pageContainerTop"></will-page>
+        //     </carousel-item>
+        // </carousel>
+        
+        
+    import { swiper, swiperSlide } from 'vue-awesome-swiper'
+    import { Carousel, CarouselItem } from 'vue-l-carousel'
     import "./index.scss";
     import Hot from "./subpage/Hot";
+    import Will from "./subpage/Will";
     import Tabs from "../../components/Tabs";
+    import {mapState} from "vuex";
+    
     export default {
         data () {
             return {
@@ -55,12 +69,16 @@
                 tabBorderTranslateX : 0,
                 activeBgIndex : -1,
                 activeColorIndex : 0,
-                pageContainerTop : "0px"
+                pageContainerTop : "0px",
+                swiperOption : {
+                    noSwiping : true,
+                    onSlideChangeEnd : (swiper) => {
+                        // console.log(swiper.activeIndex);
+                        // console.log(this);
+                        this.setTabsBorderStyle(null, swiper.activeIndex);
+                    }
+                }
             }
-            
-        },
-        computed : {
-            
         },
         methods : {
             getTabsBorderWidth () {
@@ -68,10 +86,17 @@
                 this.tabBorderTranslateX = this.$refs.tab[0].offsetLeft;
             },
             setTabsBorderStyle (event, index) {
-                this.tabBorderTranslateX = event.target.offsetLeft;
-                this.tabBorderWidth = event.target.offsetWidth;
+                if (event) {
+                    this.tabBorderTranslateX = event.target.offsetLeft;
+                    this.tabBorderWidth = event.target.offsetWidth;
+                } else {
+                    this.tabBorderTranslateX = this.$refs.tab[index].offsetLeft;
+                    this.tabBorderWidth = this.$refs.tab[index].offsetWidth;
+                }
+                
                 this.activeBgIndex = index;
                 this.activeColorIndex = index;
+                this.$refs.mySwiper.swiper.slideTo(index);
             },
             //设置中间滚动部分的样式
             setPageContainerStyle () {
@@ -80,21 +105,131 @@
             }
 
         },
+        computed : {
+            ...mapState([
+                "banner_is_touching"
+            ])
+        },
         created () {
             setTimeout(() => {
                 this.getTabsBorderWidth();
                 this.setPageContainerStyle();
+                // this.$refs.mySwiper.swiper.update();
             }, 20);
         },
         components : {
             "hot-page" : Hot,
-            "footer-tabs" : Tabs
+            "footer-tabs" : Tabs,
+            'carousel': Carousel,
+            'carousel-item': CarouselItem,
+            "will-page": Will,
+            swiper,
+            "swiper-slide" : swiperSlide
         }
     }
 
 </script>
 
-<style lang="scss">
-    
+<style lang="scss" scoped>
+    .swiper_container {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    }
+    .header_container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 2;
+}
+.page_container {
+    position: absolute;
+    left: 0;
+    bottom: 1.8rem;
+    width: 100%;
+    overflow: hidden;
+}
+.page_scroll {
+    overflow-y: scroll;
+}
+.header {
+    display : flex;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing : border-box;
+    padding: 0.2rem 0.3rem 0 0.53rem;
+
+    .title_img {
+        width: 3.12rem;
+        height: 1.26rem;
+    }
+}
+    .location {
+        font-size: 0.4rem;
+        display: flex;
+        align-items: center;
+        height: 0.56rem;
+        margin-top: 0.26rem;
+        color: #737373;
+        
+
+        .iconfont {
+            font-size: 0.56rem;
+            color: #35adc6;
+            margin-left: 0.15rem;
+            
+        }
+
+    }
+
+    //tab样式
+    .nav {
+        width: 100%;
+        display: flex;
+        color: #737373;
+        // padding-bottom: 0.07rem;
+        position: relative;
+        
+        .tab {
+            height: 1.1rem;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.4rem;
+            line-height: 1.1rem;
+
+            span {
+                // height: 100%;
+                
+            }
+            .activeBg {
+                // background: #f0f0f0;
+                // transition: all 0.2s;
+                animation: tabsBg 0.2s;
+            }
+        }
+
+        .tab_border {
+            background: #ff663d;
+            height: 0.07rem;
+            position: absolute;
+            bottom: 0rem;
+            transition: all 0.1s;
+        }
+    }
+
+    //tabs点击阴影效果
+    @keyframes tabsBg {
+        from {
+            background: #fff;
+
+        }
+        to {
+            background: #f8f8f8;
+        }
+    }
 
 </style>

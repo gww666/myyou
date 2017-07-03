@@ -19,7 +19,10 @@
             },
             list : {
                 type : Array,
-                default : []
+                default: function () {
+                    return [];
+                }
+                
             },
             listenScroll : {
                 type : Boolean,

@@ -18,6 +18,13 @@
     }
 </script>
 
-<style lang="scss">
-    
+<style lang="scss" scoped>
+    .border_container {
+        background: url("../../assets/borderbottom4.png") repeat-x;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        
+    }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="swipe-container">
+    <div class="swipe-container" @touchstart="handleBannerTouchStart" @touchend="handleBannerTouchEnd">
         <mt-swipe :auto="0" class="banner_swipe">
             <mt-swipe-item v-for="(item, index) in list" class="banner_item">
                 <img :src="item.imageUrl" alt="" class="banner_img" />
@@ -13,14 +13,16 @@
     import "./index.scss";
     import BorderBottom from "../BorderBottom";
     import {Swipe, SwipeItem} from 'mint-ui';
-    // import {HOTBNAAER_LOADED} from "../../store/mutation-type";
-    // import {mapMutations} from "vuex";
+    import {BANNER_IS_TOUCHING} from "../../store/mutation-type";
+    import {mapMutations} from "vuex";
 
     export default {
         props : {
             list : {
                 type : Array,
-                default : []
+                default : function () {
+                    return [];
+                }
             },
             width : {
                 type : String,
@@ -46,6 +48,15 @@
             //         // console.log(this[HOTBNAAER_LOADED]);
             //     }
             // }
+            ...mapMutations([BANNER_IS_TOUCHING]),
+            handleBannerTouchStart () {
+                this.BANNER_IS_TOUCHING(true);
+                // console.log("banner滑动开始");
+            },
+            handleBannerTouchEnd () {
+                this.BANNER_IS_TOUCHING(false);
+                // console.log("banner滑动结束");
+            }
 
         },
         created () {

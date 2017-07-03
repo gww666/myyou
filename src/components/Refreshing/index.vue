@@ -64,7 +64,7 @@
                     
 
                     if (!this.isRefreshing) {
-                        // this.getFirstListData();
+                        this.getFirstListData();
                     }
                     
                 }
