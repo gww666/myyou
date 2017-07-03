@@ -7,27 +7,37 @@
                 @mscroll="handleMScroll"
                 @mtouchend="handleMTouchend"
                 @mscrollStart="handleMScrollStart"
+                @mscrollEnd="handleMScrollEnd"
                 :probeType="probeType"
                 :listenScroll="true"
                 :listenTouchend="true"
                 :listenScrollStart="true"
+                :listenScrollEnd="true"
                 ref="scroll"
-                :class="{'scroll_refreshing': loadingRefreshActive, 'scroll_refreshed': !isRefreshing}" 
             >
                 <div ref="scrollContainer" :class="{'scrollContainer' : test}">
-                    <div class="loading_refresh" ref="loadingRefresh">
-                        <div class="refresh_container">
-                            <img src="../../../assets/loading.png" alt="">
-                            <span class="refresh_icon" ref="refresh_icon"></span>
-                        </div>
-                    </div>
+                    <refreshing
+                        :scrollEnd="scrollEnd"
+                        :scrollChecked="scrollChecked"
+                        :isRefreshing="isRefreshing"
+                        :isProtected="isProtected"
+                        :getFirstListData="getFirstListData"
+                        :scrollY="scrollY"
+                    >
+                    </refreshing>
                     <banner :list="bannerList"></banner>
                     <div class="list_container">
                         <film-list :list="filmList"></film-list>
                     </div>
                     <!-- 加载更多提示框 -->
                     <div class="loadmore_cintainer" ref="loading_more">
-                        <loading :visible="isLoadMoreing" :hasMore="hasMore" ></loading>
+                        <loading  
+                            :hasMore="hasMore" 
+                            :getMoreListData="getMoreListData"
+                            :isLoadMoreing="isLoadMoreing"
+                            :scrollY="scrollY"
+                            >
+                        </loading>
                     </div>
                 </div>
             </scroll>
@@ -43,13 +53,14 @@
     import { Loadmore } from 'mint-ui';
     import Scroll from "../../../components/Scroll/Scroll";
     import Loading from "../../../components/Loading";
+    import Refreshing from "../../../components/Refreshing";
     // import {mapState} from "vuex";
 
     const htmlFontSize = document.documentElement.style.fontSize.slice(0, -2);
     const PROTECT_TIME = 8 * 1000;
     const SCREEN_HEIGHT = window.screen.height;
     const TABS_HEIGHT = htmlFontSize * 1.8;
-    // let LoadingRefreshHeight = 2 * htmlFontSize;
+    const LoadingRefreshHeight = 2 * htmlFontSize;
     
 
     export default {
@@ -63,7 +74,7 @@
             return {
                 bannerList : [],
                 filmList : [],
-                page : 1,
+                page : 0,
                 count : 10,
                 hasMore : true,
                 scrollY : 0,
@@ -83,12 +94,11 @@
             // console.log(indexBanner);
             this.probeType = 3;
             this.getBannerData();
-            this.getListData();
+            this.getMoreListData();
             
             //涉及到dom操作的注意17ms延迟问题
             setTimeout(() => {
-                //设置loading圈圈的left值
-                this.setLoadingIconPosition();
+
             }, 20);
             
         },
@@ -107,65 +117,118 @@
                     })
                     .catch(error => console.log(error));
             },
-            //获取热映电影列表数据
-            getListData (callback) {
-                axios.get(hotList, {
-                    params : {
-                        page : this.page,
-                        count : this.count
-                    }
-                })
-                .then(data => {
-                    console.log(data);
-                    if (data.status === 200) {
-                        //判断有无更多数据
-                        let total = data.data.data.page.total;
-                        let current = data.data.data.page.current;
-                        this.hasMore = current === total ? false : true;
-                        if (callback) {
-                            callback(data.data.data);
-                        } else {
-                            this.filmList = data.data.data.films;
+            //获取更多热映电影列表数据
+            getMoreListData () {
+                this.page = this.page + 1;
+                this.isLoadMoreing = true;
+                setTimeout(() => {
+                    axios.get(hotList, {
+                        params : {
+                            page : this.page,
+                            count : this.count
+                        }
+                    })
+                    .then(data => {
+                        console.log(data);
+                        if (data.status === 200) {
+                            //判断有无更多数据
+                            let total = data.data.data.page.total;
+                            let current = data.data.data.page.current;
+                            this.hasMore = current === total ? false : true;
+                            //拼接数组
+                            this.filmList = this.filmList.concat(data.data.data.films);
+                            this.isLoadMoreing = false;
+                            // if (callback) {
+                            //     callback(data.data.data);
+                            // } else {
+                            //     this.filmList = data.data.data.films;
+                            // }
+                            
+                            // if (callback) {
+                            //     callback();
+                            // }
                         }
                         
-                        // if (callback) {
-                        //     callback();
-                        // }
-                    }
-                    
-                })
-                .catch(error => console.log(error));
+                    })
+                    .catch(error => console.log(error));
+                }, 1000);   
+            },
+            //获取首屏数据
+            getFirstListData () {
+                this.page = 1;
+                this.isRefreshing = true;
+                this.isProtected = true;
+                this.scrollChecked = true;
+                this.$refs.scrollContainer.style.transform = `translate(0px, ${LoadingRefreshHeight}px) translateZ(0px)`;
+                console.log("正在下拉刷新");
+                // setTimeout(() => {
+                //     axios.get(hotList, {
+                //         params : {
+                //             page : this.page,
+                //             count : this.count
+                //         }
+                //     })
+                //     .then(data => {
+                //         console.log(data);
+                //         if (data.status === 200) {
+                //             //判断有无更多数据
+                //             let total = data.data.data.page.total;
+                //             let current = data.data.data.page.current;
+                //             this.hasMore = current === total ? false : true;
+                //             //拼接数组
+                //             this.filmList = data.data.data.films;
+                //             this.isRefreshing = false;
+                //             this.scrollEnd = false;
+                //             this.scrollChecked = false;
+                //             this.$refs.scrollContainer.style.transform = `translate(0px, 0px) translateZ(0px)`;
+                //             this.$refs.scrollContainer.style.transition = `transform 0.4s`;
+                //             console.log("下拉刷新操作完成");
+                //             setTimeout(() => {
+                //                 this.isProtected = false;
+                //                 console.log("保护解除，可以请求数据");
+                //             }, PROTECT_TIME);
+                //         }
+                        
+                //     })
+                //     .catch(error => console.log(error));
+                // }, 1000);
             },
             handleMScroll (pos) {
+                this.scrollY = pos.y;
+                if (!this.scrollChecked && this.scrollEnd) {
+                    this.scrollChecked = true;
+                    this.scrollEnd = false;
+                    this.$refs.scrollContainer.style.transform = `translate(0px, ${this.LoadingRefreshHeight}px) translateZ(0px)`;
+                }
                 // ------判断是否执行下拉刷新------
                 // scrollEnd：手指是否离开屏幕
                 // scrollChecked：一旦进入判断，该次操作只执行一次，在请求结束后重置为false
                 // pos.y >= this.LoadingRefreshHeight：设立一个临界值，只有当下拉距离大于这个数值才会触发刷新操作
                 // isProtected：刷新保护，一段时间内重复下拉不会刷新，保护时间由---常量PROTECT_TIME---决定
-                if (this.scrollEnd && !this.scrollChecked && pos.y >= this.LoadingRefreshHeight && !this.isProtected) {
-                    if (!this.isRefreshing) {
-                        this.isRefreshing = true;
-                        this.isProtected = true;
-                        console.log("进行下拉刷新操作");
-                            this.page = 1;
-                            let callback = (data) => {
-                                this.isRefreshing = false;
-                                this.scrollEnd = false;
-                                this.scrollChecked = false;
-                                this.$refs.scrollContainer.style.transform = `translate(0px, 0px) translateZ(0px)`;
-                                this.$refs.scrollContainer.style.transition = `transform 0.4s`;
-                                this.filmList = data.films;
-                                console.log("下拉刷新操作完成");
-                                setTimeout(() => {
-                                    this.isProtected = false;
-                                    console.log("保护解除，可以请求数据");
-                                }, PROTECT_TIME)
-                            }
-                            this.getListData(callback);
-                        // }, 2000);
-                    }
-                    this.$refs.scrollContainer.style.transform = `translate(0px, ${this.LoadingRefreshHeight}px) translateZ(0px)`;
-                }
+                // if (this.scrollEnd && !this.scrollChecked && pos.y >= this.LoadingRefreshHeight && !this.isProtected) {
+                //     if (!this.isRefreshing) {
+                //         this.isRefreshing = true;
+                //         this.isProtected = true;
+                //         console.log("进行下拉刷新操作");
+                //             this.page = 1;
+                //             let callback = (data) => {
+                //                 this.isRefreshing = false;
+                //                 this.scrollEnd = false;
+                //                 this.scrollChecked = false;
+                //                 this.$refs.scrollContainer.style.transform = `translate(0px, 0px) translateZ(0px)`;
+                //                 this.$refs.scrollContainer.style.transition = `transform 0.4s`;
+                //                 this.filmList = data.films;
+                //                 console.log("下拉刷新操作完成");
+                //                 setTimeout(() => {
+                //                     this.isProtected = false;
+                //                     console.log("保护解除，可以请求数据");
+                //                 }, PROTECT_TIME)
+                //             }
+                //             this.getListData(callback);
+                //         // }, 2000);
+                //     }
+                //     this.$refs.scrollContainer.style.transform = `translate(0px, ${this.LoadingRefreshHeight}px) translateZ(0px)`;
+                // }
 
                 //------判断是否执行上拉加载更多------
                 // console.log(pos.y);
@@ -177,14 +240,14 @@
                 // console.log(this.$refs.loading_more.offsetParent);
                 // console.log(SCREEN_HEIGHT);
                 // if (this.$refs.loading_more.offsetTop + pos.y + parseInt(this.top) < SCREEN_HEIGHT) {
-                if (this.$refs.loading_more.getBoundingClientRect().top + TABS_HEIGHT < SCREEN_HEIGHT) {
+                // if (this.$refs.loading_more.getBoundingClientRect().top + TABS_HEIGHT < SCREEN_HEIGHT) {
                     // this.$refs.loading_more.getBoundingClientRect().top + pos.y
                     // console.log(111111111);
-                    if (!this.isLoadMoreing && this.hasMore) {
+                    // if (!this.isLoadMoreing && this.hasMore) {
                         //进行加载更多的操作
-                        this.handlePullToLoadMore();
-                    }
-                }
+                        // this.handlePullToLoadMore();
+                //     }
+                // }
                 
 
 
@@ -193,6 +256,12 @@
                 // console.log(pos.y);
                 // if (pos.y > )
                 // console.log("滑动结束");
+                // if (!this.scrollChecked) {
+                //     this.scrollChecked = true;
+                //     this.$refs.scrollContainer.style.transform = `translate(0px, ${pos.y}px) translateZ(0px)`;
+                // }
+                
+                // console.log(this.$refs.scrollContainer);
                 this.scrollEnd = true;
 
                 // console.log(pos.y);
@@ -201,27 +270,13 @@
                 // console.log("start");
                 // this.$refs.scrollContainer.style.transform = `translate(0px, ${this.pauseY}px) translateZ(0px)`;
             },
-            //固定loading圈圈位置
-            setLoadingIconPosition () {
-                //获取父容器的宽度
-                let c_width = htmlFontSize * 1.16;
-                //获取圈圈宽度
-                let q_width = htmlFontSize * 0.45;
-                //计算left值
-                let q_left = (c_width - q_width) / 2;
-                //给圈圈设置left
-                // this.$refs.refresh_icon.style.left = q_left + "px";
-                this.$refs.refresh_icon.style.left = "0.23rem";
+            handleMScrollEnd () {
+                // this.scrollEnd = true;
+                // console.log("滚动结束");
             },
+            
             //处理上拉加载更多事件
             handlePullToLoadMore () {
-                this.page = this.page + 1;
-                this.isLoadMoreing = true;//置为正在加载状态
-                let callback = (data) => {
-                    this.filmList = this.filmList.concat(data.films);
-                    this.isLoadMoreing = false;
-                }
-                this.getListData(callback);
 
             }
         },
@@ -229,10 +284,9 @@
             // ...mapState({
             //     bannerLoaded : state => state.hotBannerLoaded
             // })
-            LoadingRefreshHeight () {
-                // let htmlFontSize = document.documentElement.style.fontSize.slice(0, -2);
-                return 2 * htmlFontSize;
-            }
+            // LoadingRefreshHeight () {
+            //     return 2 * htmlFontSize;
+            // }
         },
         watch : {
             scrollY () {
@@ -244,7 +298,8 @@
             "film-list" : List,
             "mt-loadmore" : Loadmore,
             "scroll" : Scroll,
-            "loading": Loading
+            "loading": Loading,
+            "refreshing": Refreshing
         }
     }
 </script>
@@ -303,46 +358,5 @@
 
         // margin-bottom: 0.3rem;
     }
-    .refresh_container {
-        width: 1.16rem;
-        height: 1.7rem;
-        position: relative;
-        // display: flex;
-        // justify-content: center;
-
-
-        img {
-            width: 100%;
-            height: 100%;
-        }
-        .refresh_icon {
-            // width: 100%;
-            position: absolute;
-            display: block;
-            height: 0.45rem;
-            width: 0.45rem;
-            border: 0.1rem solid #fff;
-            border-radius: 50%;
-            // left: (50% - 0.3rem);
-            // left: 0;
-            // right: 50%;
-            // margin-top: 0.37rem;
-            top: 0.38rem;
-            border-top-color: #4cbdd1;
-            // border-left: 0;
-            // border-top-left-radius:none;
-            // border-bottom-right-radius:50%;
-            // border-bottom-right-radius:50%;
-            animation: icon-anim 0.6s infinite;
-        }
-    }
-
-    @keyframes icon-anim {
-        from {
-            transform: rotate(0deg);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
+    
 </style>

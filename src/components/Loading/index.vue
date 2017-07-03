@@ -1,6 +1,6 @@
 <template>
-    <div class="loading_container">
-        <div class="spinner" v-if="visible">
+    <div class="loading_container" ref="loading_more">
+        <div class="spinner" v-if="isLoadMoreing">
             <div class="spinner-container container1">
                 <div class="circle1"></div>
                 <div class="circle2"></div>
@@ -20,17 +20,21 @@
                 <div class="circle4"></div>
             </div>
         </div>
-        <div v-if="!visible" class="toast">{{toastText}}</div>
+        <div v-if="!isLoadMoreing" class="toast">{{toastText}}</div>
     </div>
 </template>
 
 <script>
+    const htmlFontSize = document.documentElement.style.fontSize.slice(0, -2);
+    const SCREEN_HEIGHT = window.screen.height;
+    const TABS_HEIGHT = htmlFontSize * 1.8;
     export default {
+        data () {
+            return {
+                      page : 0
+                   }
+        },
         props : {
-            visible : {
-                type : Boolean,
-                default : true
-            },
             toast : {
                 type : Object,
                 default : function () {
@@ -43,11 +47,37 @@
             hasMore : {
                 type : Boolean,
                 default : true
+            },
+            getMoreListData : {
+                type : Function
+            },
+            scrollY : {
+                type : Number
+            },
+            isLoadMoreing : {
+                type : Boolean,
+                default : false
             }
         },
         computed : {
             toastText () {
                 return this.hasMore ? this.toast.hasMore : this.toast.noMore;
+            }
+        },
+        watch : {
+            scrollY (newY) {
+                if (this.getMoreListData) {
+                  // console.log(1111111);
+                  if (this.$refs.loading_more.getBoundingClientRect().top + TABS_HEIGHT < SCREEN_HEIGHT) {
+                      // this.$refs.loading_more.getBoundingClientRect().top + pos.y
+                      // console.log(111111111);
+                      if (!this.isLoadMoreing && this.hasMore) {
+                          //进行加载更多的操作
+                          this.getMoreListData();
+                      }
+                  }
+                    
+                }
             }
         }
     }

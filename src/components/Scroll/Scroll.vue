@@ -32,7 +32,11 @@
             listenScrollStart: {
                 type : Boolean,
                 default : false
-            }
+            },
+            listenScrollEnd: {
+                type : Boolean,
+                default : false
+            },
         },
         methods : {
             initScroll () {
@@ -66,6 +70,14 @@
                         // console.log("滑动结束");
                         // console.log(pos);
                         this.$emit('mscrollStart');
+                    });
+                }
+                if (this.listenScrollEnd) {
+                    this.scroll.on('scrollEnd', () => {
+                        // console.log("ssss");
+                        // console.log("滑动结束");
+                        // console.log(pos);
+                        this.$emit('mscrollEnd');
                     });
                 }
                 // this.scroll.on('touchend', (pos) => {
