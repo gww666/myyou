@@ -243,7 +243,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        bottom: 1.8rem;
+        bottom: 0;
         width: 100%;
         overflow: hidden;
         // height: 100%;

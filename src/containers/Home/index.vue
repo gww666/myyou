@@ -1,42 +1,49 @@
 <template>
-    <div>
-        <div class="header_container" ref="header">
-            <header class="header">
-                <img src="../../assets/index_title.png" alt="" class="title_img">
-                <span class="location">
-                    {{location.city}}
-                    <i class="iconfont icon-dingwei"></i>
-                </span>
-            </header>
-            <nav class="nav">
-                <p class="tab"  v-for="(item, index) in tabs">
-                    <span ref="tab" 
-                        @click="setTabsBorderStyle($event, index)" 
-                        :class="{'activeBg' : activeBgIndex === index}"
-                        :style="{'color' : activeColorIndex === index ? '#ff663d' : ''}">
-                        {{item}}
-                    </span>
-                </p>
+    <transition name="slide"
+        v-on:enter="enter"
+        v-on:afterEnter="afterEnter">
 
-                <span class="tab_border" 
-                        :style="{'left' : tabBorderTranslateX + 'px', 
-                            'width' : tabBorderWidth + 'px'}"
-                >
-                </span>
-            </nav>
-        </div>
-        <swiper ref="mySwiper" class="swiper_container" :options="swiperOption">
-            <!-- slides -->
-            <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}"><hot-page :top="pageContainerTop" ></hot-page></swiper-slide>
-            <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}"><will-page :top="pageContainerTop" ></will-page></swiper-slide>
-            <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}">777777</swiper-slide>
-        </swiper>
+            <div>
+                <div class="header_container" ref="header">
+                    <header class="header">
+                        <img src="../../assets/index_title.png" alt="" class="title_img">
+                        <router-link to="/location">
+                            <span class="location">
+                                {{location.city}}
+                                <i class="iconfont icon-dingwei"></i>
+                            </span>
+                        </router-link>
+                    </header>
+                    <nav class="nav">
+                        <p class="tab"  v-for="(item, index) in tabs">
+                            <span ref="tab" 
+                                @click="setTabsBorderStyle($event, index)" 
+                                :class="{'activeBg' : activeBgIndex === index}"
+                                :style="{'color' : activeColorIndex === index ? '#ff663d' : ''}">
+                                {{item}}
+                            </span>
+                        </p>
 
-        <footer>
-            <footer-tabs></footer-tabs>
-        </footer>
+                        <span class="tab_border" 
+                                :style="{'left' : tabBorderTranslateX + 'px', 
+                                    'width' : tabBorderWidth + 'px'}"
+                        >
+                        </span>
+                    </nav>
+                </div>
+                <swiper ref="mySwiper" class="swiper_container" :options="swiperOption" :style="{'top': pageContainerTop}">
+                    <!-- slides -->
+                    <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}"><hot-page ></hot-page></swiper-slide>
+                    <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}"><will-page></will-page></swiper-slide>
+                    <swiper-slide :class="{'swiper-no-swiping' : banner_is_touching}">777777</swiper-slide>
+                </swiper>
 
-    </div>
+                <footer class="footer" :style="{'top': footerTop + 'px'}" ref="footer">
+                    <footer-tabs></footer-tabs>
+                </footer>
+            </div>        
+
+    </transition>
 </template>
 
 <script>
@@ -49,7 +56,8 @@
         //     </carousel-item>
         // </carousel>
         
-        
+    const htmlFontSize = document.documentElement.style.fontSize.slice(0, -2);
+    // const FOOTER_TOP = window.screen.height - 1.8 * htmlFontSize;
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
     import { Carousel, CarouselItem } from 'vue-l-carousel'
     import "./index.scss";
@@ -77,7 +85,9 @@
                         // console.log(this);
                         this.setTabsBorderStyle(null, swiper.activeIndex);
                     }
-                }
+                },
+                boxShow : false,
+                // footerTop: 0
             }
         },
         methods : {
@@ -98,23 +108,37 @@
                 this.activeColorIndex = index;
                 this.$refs.mySwiper.swiper.slideTo(index);
             },
+            getFooterTop () {
+                this.footerTop = this.$refs.footer.getBoundingClientRect().top;
+            },
             //设置中间滚动部分的样式
             setPageContainerStyle () {
                 this.pageContainerTop = this.$refs.header.offsetHeight + "px";
                 // console.log(this.pageContainerTop);
+            },
+            enter : function (el, done) {
+                this.boxShow = true;
+            },
+            afterEnter : function () {
+                this.boxShow = false;
             }
 
         },
         computed : {
             ...mapState([
                 "banner_is_touching"
-            ])
+            ]),
+            footerTop () {
+                return window.screen.height - 1.8 * htmlFontSize;
+            }
+
         },
         created () {
             setTimeout(() => {
                 this.getTabsBorderWidth();
                 this.setPageContainerStyle();
                 // this.$refs.mySwiper.swiper.update();
+                this.getFooterTop();
             }, 20);
         },
         components : {
@@ -131,10 +155,18 @@
 </script>
 
 <style lang="scss" scoped>
+    .box {
+        position: absolute;
+        top: 0;
+        // bottom: 1.8rem;
+        left: 0;
+        height: 516px;
+        width: 100%;
+    }
     .swiper_container {
         position: absolute;
         top: 0;
-        bottom: 0;
+        bottom: 1.8rem;
         width: 100%;
     }
     .header_container {
@@ -143,7 +175,7 @@
         left: 0;
         width: 100%;
         z-index: 2;
-}
+    }
 .page_container {
     position: absolute;
     left: 0;
@@ -220,6 +252,13 @@
             transition: all 0.1s;
         }
     }
+    .footer {
+        position: absolute;
+        // bottom: 0;
+        left: 0;
+        width: 100%;
+        min-height: 1.8rem;
+    }
 
     //tabs点击阴影效果
     @keyframes tabsBg {
@@ -229,6 +268,32 @@
         }
         to {
             background: #f8f8f8;
+        }
+    }
+
+    //转场动画
+    .slide-enter-active {
+        animation: enter 0.8s;
+    }
+    .slide-leave-active {
+        animation: leave 0.8s;
+    }
+
+    @keyframes leave {
+        from {
+            transform: translateX(0px);
+        }
+        to {
+            transform: translateX(-100%);
+        }
+    }
+
+    @keyframes enter {
+        from {
+            transform: translateX(-100%);
+        }
+        to {
+            transform: translateX(0px);
         }
     }
 

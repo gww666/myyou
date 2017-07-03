@@ -14,5 +14,12 @@ export default {
   // .mint-swipe-indicators {
   //     opacity: 0.5;
   // }
+  a {
+      text-decoration: none;
+  }
+
+  ul, ol {
+      list-style: none;
+  }
 
 </style>
