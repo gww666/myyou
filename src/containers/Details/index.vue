@@ -14,7 +14,7 @@
                     <span>剧照</span>
                 </div>
             </div>
-            <div class="h_bg"></div>
+            <div class="h_bg" ref="h_bg"></div>
         </div>
 
         <div class="h_container">
@@ -214,18 +214,40 @@
                 // console.log("newY", newT);
                 let dis = newY - oldY;
                 if (dis > 0) {
-                    //向下滑动
+                    //向下滑动（上拉）
                     let top = getStyle(this.$refs.img_cover, "top") - 0;
                     // console.log(getStyle(this.$refs.img_cover, "top"));
 
                     this.$refs.img_cover.style.top = (top + dis / 2) + "px";
-                    console.log(this.$refs.d_intro.getBoundingClientRect().top);
+                    // console.log(this.$refs.d_intro.getBoundingClientRect().top);
+                    //判断当片名栏触及到header底部时，进行动画
+                    if (this.$refs.d_intro.getBoundingClientRect().top < this.DHeaderHeight) {
+                        // console.log("片名栏触及到header底部");
+                        
+                        if (this.$refs.d_intro.getBoundingClientRect().top + this.DIntroHeight > this.DHeaderHeight) {
+                            let unit = 1 / this.DIntroHeight;
+                            let opacity = getStyle(this.$refs.h_bg, "opacity") - 0;
+                            // console.log();
+                            this.$refs.h_bg.style.opacity = opacity + unit;
+                            // console.log("该结束动画了");
+                        }
+
+                    }
                 } else if (dis < 0) {
                     //向上滑动
                     let top = getStyle(this.$refs.img_cover, "top") - 0;
                     this.$refs.img_cover.style.top = (top + dis / 2) + "px";
-                    //判断当片名栏触及到header底部时，进行动画
+                    
                     // console.log(this.DIntroHeight);
+                    //当header的底部和片名栏底部重合时停止动画
+                    if (this.$refs.d_intro.getBoundingClientRect().top < this.DHeaderHeight) {
+                        
+                        let unit = 1 / this.DIntroHeight;
+                        let opacity = getStyle(this.$refs.h_bg, "opacity") - 0;
+                        // console.log();
+                        this.$refs.h_bg.style.opacity = opacity - unit;
+                    }
+                    
                     
                     // if (this.$refs.d_intro.getBoundingClientRect().top)
                     
@@ -277,7 +299,7 @@
         width: 100%;
         height: 100%;
         background: #fff;
-        opacity: 0.2;
+        opacity: 0;
     }
     .h_back {
         height: 0.7rem;
