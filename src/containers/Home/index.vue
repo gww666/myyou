@@ -9,7 +9,7 @@
                         <img src="../../assets/index_title.png" alt="" class="title_img">
                         <router-link to="/location">
                             <span class="location">
-                                {{location.city}}
+                                {{location.cityName}}
                                 <i class="iconfont icon-dingwei"></i>
                             </span>
                         </router-link>
@@ -69,9 +69,6 @@
     export default {
         data () {
             return {
-                location : {
-                    city : "深圳"
-                },
                 tabBorderWidth : 0,
                 tabs: ["热映电影", "即将上映", "热门活动"],
                 tabBorderTranslateX : 0,
@@ -126,8 +123,11 @@
         },
         computed : {
             ...mapState([
-                "banner_is_touching"
+                "banner_is_touching",
             ]),
+            ...mapState({
+                location : state => {console.log(state); return state.location.location;}
+            }),
             footerTop () {
                 return window.screen.height - 1.8 * htmlFontSize;
             }

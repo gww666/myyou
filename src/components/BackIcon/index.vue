@@ -1,5 +1,5 @@
 <template>
-    <div class="icon_container" :style="{width, height}">
+    <div class="icon_container" :style="{width, height}" @click="handleBackClick">
         <img src="../../assets/back_icon.png" alt="">
     </div>
 </template>
@@ -13,6 +13,11 @@
             height : {
                 type : String,
                 default : "0.5rem"
+            }
+        },
+        methods : {
+            handleBackClick () {
+                this.$router.go(-1);
             }
         }
     }

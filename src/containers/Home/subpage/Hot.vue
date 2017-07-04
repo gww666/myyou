@@ -211,10 +211,10 @@
         computed : {
             // ...mapState({
             //     bannerLoaded : state => state.hotBannerLoaded
-            // })
-            // LoadingRefreshHeight () {
-            //     return 2 * htmlFontSize;
-            // }
+            // }),
+            LoadingRefreshHeight () {
+                return 2 * htmlFontSize;
+            }
         },
         watch : {
             scrollY () {
