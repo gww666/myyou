@@ -1,23 +1,27 @@
 <template>
     <div class="list_container">
-        <div v-for="(item, index) in list" :key="index" class="list_item">
-            <div class="img_container">
-                <img :src="item.poster.origin" alt="" class="list_img">
-                <border-bottom height="0.18rem" backgroundSize="0.35rem"></border-bottom>
+        
+            <div v-for="(item, index) in list" :key="index" class="">
+                <router-link :to="'/details/' + item.id" tag="div" class="list_item">
+                    <div class="img_container">
+                        <img :src="item.poster.origin" alt="" class="list_img">
+                        <border-bottom height="0.18rem" backgroundSize="0.35rem"></border-bottom>
+                    </div>
+                    <div class="list_right">
+                        <p class="title">
+                            <span class="name">{{item.name}}</span>
+                            <span class="grade" v-if="listType === 'hot'">{{item.grade}}</span>
+                        </p>
+                        <p class="intro">{{item.intro}}</p>
+                        <p v-if="listType === 'hot'" class="count">
+                            <span class="cinemaCount"><font>{{item.cinemaCount}}</font>家影院正在上映</span>
+                            <span class="watchCount"><font>{{item.watchCount}}</font>人购票</span>
+                        </p>
+                        <p v-if="listType === 'will'" class="premiereAt">上映日期：{{item.premiereAt | watchTime}}</p>
+                    </div>
+                </router-link>
             </div>
-            <div class="list_right">
-                <p class="title">
-                    <span class="name">{{item.name}}</span>
-                    <span class="grade" v-if="listType === 'hot'">{{item.grade}}</span>
-                </p>
-                <p class="intro">{{item.intro}}</p>
-                <p v-if="listType === 'hot'" class="count">
-                    <span class="cinemaCount"><font>{{item.cinemaCount}}</font>家影院正在上映</span>
-                    <span class="watchCount"><font>{{item.watchCount}}</font>人购票</span>
-                </p>
-                <p v-if="listType === 'will'" class="premiereAt">上映日期：{{item.premiereAt | watchTime}}</p>
-            </div>
-        </div>
+
     </div>
 
 </template>

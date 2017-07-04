@@ -1,0 +1,70 @@
+//演员
+.actors {
+    font-size: 0.4rem;
+    
+    padding: 0 0.4rem;
+    overflow: hidden;
+    width: 100%;
+
+    dl {
+        margin: 0 0.23rem;
+        text-align: center;
+        width: 2.4rem;
+
+
+        dd {
+            width: 100%;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    }
+
+    img {
+        width: 2.4rem;
+        height: 2.4rem;
+    }
+}
+.actors_scroll {
+    display: flex;
+    white-space: nowrap;
+    overflow-x: scroll;
+}
+.i_name {
+    font-size: 0.73rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+.i_else {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    
+    >div {
+        display: flex;
+        >span {
+            margin-right: 0.15rem;
+            border: 1px solid #fff;
+            border-radius: 10px;
+            padding: 0.12rem 0.1rem;
+            font-size: 0.3rem;
+        }
+    }
+
+    >span {
+        font-size: 0.53rem;
+        color: #e57300;
+        font-weight: bold;
+    }
+}
+.i_bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: #000;
+    opacity: 0.3;
+    box-shadow: 0 -0.2rem 0.2rem #000;
+}
