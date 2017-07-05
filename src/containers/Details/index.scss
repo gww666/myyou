@@ -5,6 +5,7 @@
     padding: 0 0.4rem;
     overflow: hidden;
     width: 100%;
+    margin-top: 0.85rem;
 
     dl {
         margin: 0 0.23rem;
@@ -32,8 +33,13 @@
 }
 .i_name {
     font-size: 0.73rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.65rem;
+    position: fixed;
+    line-height: 0.73rem;
+}
+.i_name_container {
+     margin-top: 0.5rem;
+     margin-bottom: 0.65rem;
+     height: 0.73rem;
 }
 .i_else {
     display: flex;
@@ -66,5 +72,122 @@
     top: 0;
     background: #000;
     opacity: 0.3;
-    box-shadow: 0 -0.2rem 0.2rem #000;
+    box-shadow: 0 -20px 20px #000;
 }
+
+//评论
+.comments {
+    padding: 0 0.35rem;
+    font-size: 0.4rem;
+    margin-top: 0.45rem;
+    width: 100%;
+    margin-bottom: 1.65rem;
+}
+.commentsItem {
+    display: flex;
+    padding-top: 0.53rem;
+
+
+    .tx {
+        width: 1.56rem;
+        height: 1.56rem;
+    }
+}
+.c_title {
+    margin-bottom: 0.32rem;
+}
+.c_right {
+    flex: 1;
+    margin-left: 0.35rem;
+    padding-bottom: 0.53rem;
+    border-bottom: 1px dashed #f0f0f0;
+}
+.c_r_title {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.42rem;
+    align-items: center;
+
+    img {
+        height: 0.78rem;
+        
+    }
+}
+
+.c_content {
+    line-height: 0.6rem;
+    margin-top: 0.33rem;
+    margin-bottom: 0.45rem;
+}
+
+.c_bottom {
+    display: flex;
+    justify-content: space-between;
+    color: #8f8f8f;
+
+    >div {
+        display: flex;
+        >p:nth-of-type(1) {
+            margin-right: 0.35rem;
+        }
+        >p {
+            display: flex;
+            align-items: center;
+
+            img {
+                height: 0.58rem;
+                margin-left: 0.1rem;
+            }
+        }
+    }
+}
+
+.footer {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 1.65rem;
+    font-size: 0.56rem;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-top: 1px solid #e0e0e0;
+
+
+}
+.f_img {
+    display: flex;
+    img {
+        height: 0.83rem;
+        padding: 0 0.47rem;
+    }
+
+    .dianzan {
+        border: 1px dashed #f0f0f0 {
+            width: 0 1px;
+        }
+
+    }
+    
+}
+.buy {
+    background: #ff6640;
+    width: 3.47rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    position: relative;
+}
+
+.buy_border {
+    // opacity: 0.5;
+    transform: rotate(90deg) translateY(1.65rem) translateX(0.15rem);
+    transform-origin: right;
+    width: 1.65rem !important;
+    
+}
+

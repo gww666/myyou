@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import Home from "../containers/Home";
 import Location from "../containers/Location";
 import Details from "../containers/Details";
+import ShowComments from "../containers/ShowComments";
 
 Vue.use(Router);
 
@@ -23,6 +24,11 @@ export default new Router({
       path: "/details/:id",
       name: "Details",
       component: Details
+    },
+    {
+      path: "/showcomments/:filmId/:filmName",
+      name : "ShowComments",
+      component: ShowComments
     }
   ]
 })
