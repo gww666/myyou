@@ -1,0 +1,32 @@
+.cinema_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.5rem;
+    position: relative;
+    width: 100%;
+    height: 1.5rem;
+    background: #fff;
+    box-sizing: border-box;
+    font-size: 0.5rem;
+
+    >div {
+        img {
+            height: 0.7rem;
+            margin-right: 0.25rem;
+        }
+    }
+
+    .c_h_border {
+        border-bottom:1px solid #bbb;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%; 
+    }
+}
+
+.icon-chazhao {
+    color: #44c0d9;
+    font-size: 0.5rem;
+}
