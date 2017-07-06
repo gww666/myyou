@@ -3,6 +3,7 @@ import Vue from "vue";
 import home from "./modules/home";
 import location from "./modules/location";
 import {HOTBNAAER_LOADED, BANNER_IS_TOUCHING} from "./mutation-type";
+import tabs from "./modules/tabs";
 
 Vue.use(Vuex);
 
@@ -25,6 +26,7 @@ export default new Vuex.Store({
     },
     modules : {
         home,
-        location
+        location,
+        tabs
     }
 });

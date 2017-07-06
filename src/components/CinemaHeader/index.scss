@@ -1,3 +1,7 @@
+.cinema_header_container {
+
+
+}
 .cinema_header {
     display: flex;
     justify-content: space-between;
@@ -10,7 +14,10 @@
     box-sizing: border-box;
     font-size: 0.5rem;
 
-    >div {
+    .c_left {
+        display: flex;
+        align-items: center;
+
         img {
             height: 0.7rem;
             margin-right: 0.25rem;
@@ -30,3 +37,66 @@
     color: #44c0d9;
     font-size: 0.5rem;
 }
+
+//筛选
+.sx {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    height: 1rem;
+    justify-content: space-between;
+    padding: 0 0.5rem;
+    align-items: center;
+    color: #757575;
+    font-size: 0.4rem;
+
+    span {
+        color: #36bfd1;
+
+        .iconfont {
+            
+        }
+    }
+}
+
+.cinema_sx_cover {
+    position: absolute;
+    top: 1.5rem;
+    left: 0;
+    width: 100%;
+    bottom: 1.8rem;
+    font-size: 0.3rem;
+}
+.district {
+    >div {
+        display: flex;
+        flex-flow: row wrap;
+    }
+}
+.services {
+    >div {
+        display: flex;
+        flex-flow: row wrap;
+    }
+}
+
+.btn {
+    display: flex;
+
+    >span {
+        flex: 1;
+    }
+}
+
+.cover {
+    background: #000;
+    opacity: 0.4;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+
+} 
+
+

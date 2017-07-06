@@ -41,7 +41,7 @@
                 <footer class="footer" :style="{'top': footerTop + 'px'}" ref="footer">
                     <footer-tabs></footer-tabs>
                 </footer>
-            </div>        
+            </div>   
 
     </transition>
 </template>
@@ -149,7 +149,16 @@
             "will-page": Will,
             swiper,
             "swiper-slide" : swiperSlide
-        }
+        },
+        props : {
+            item : {
+                type : [Object, Array],
+                default : function () {
+                    // console.log("props", this);
+                    return {};
+                }
+            }
+        },
     }
 
 </script>

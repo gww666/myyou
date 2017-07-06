@@ -5,6 +5,7 @@ import Home from "../containers/Home";
 import Location from "../containers/Location";
 import Details from "../containers/Details";
 import ShowComments from "../containers/ShowComments";
+import Cinemas from "../containers/Cinemas";
 
 Vue.use(Router);
 
@@ -12,6 +13,10 @@ export default new Router({
   routes: [
     {
       path: '/',
+      redirect : "/home"
+    },
+    {
+      path: '/home',
       name: 'Home',
       component: Home
     },
@@ -29,6 +34,11 @@ export default new Router({
       path: "/showcomments/:filmId/:filmName",
       name : "ShowComments",
       component: ShowComments
-    }
+    },
+    {
+      path: "/cinemas",
+      name : "Cinemas",
+      component: Cinemas
+    },
   ]
 })

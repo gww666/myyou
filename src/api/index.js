@@ -4,3 +4,4 @@ export const willList = "/api/film/coming-soon?__t=1498789413434";
 export const city = "/api/city";
 export const film = "/api/film";
 export const comments = "/src/json/comments.json";
+export const cinema = "/api/cinema?__t=1499304771631";

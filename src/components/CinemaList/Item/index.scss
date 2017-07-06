@@ -1,0 +1,53 @@
+.c_l_item_container {
+    padding: 0.55rem 0.38rem;  
+
+    >div {
+        display: flex;
+        justify-content: space-between;
+        
+    }
+    .t_container {
+        font-size: 0.4rem;
+        line-height: 0.4rem;
+        .name {
+            
+        }
+        .price {
+            color: #ff6640;
+
+            font {
+                font-size: 0.3rem;
+            }
+        }
+    }
+
+    .a_container {
+        font-size: 0.28rem;
+        color: #bcbcbc;
+        line-height: 0.28rem;
+        margin-top: 0.23rem;
+        .address {
+            width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .ac_container {
+        justify-content: left;
+
+        span {
+            background: #51add0;
+            color: #fff;
+            font-size: 0.28rem;
+            border-radius: 3px;
+            margin-right: 0.2rem;
+        }
+
+    }
+    
+    
+
+}
+

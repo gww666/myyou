@@ -105,7 +105,11 @@
         <footer class="footer">
             <div class="f_img">
                 <img src="../../assets/iv_publish_comment.png" alt="">
-                <img src="../../assets/iv_movie_praise.png" alt="" class="dianzan">
+                <img 
+                    :src="dzIsActive ? dzImgUrl.active : dzImgUrl.default"
+                    class="dianzan"
+                    :class="{'dz_active' : dzIsActive}"
+                    @click="handleDZClick">
                 <img src="../../assets/share.png" alt="">
             </div>
             <div class="buy">
@@ -141,7 +145,12 @@
                 touchPos: [],
                 scrollY: -1,
                 headerIsActive: false,
-                commentsList: []
+                commentsList: [],
+                dzIsActive: false,
+                dzImgUrl: {
+                    default : "/src/assets/iv_movie_praise.png",
+                    active : "/src/assets/iv_movie_praise_f.png"
+                }
             }
         },
         filters : {
@@ -208,6 +217,10 @@
             setINameStyle () {
                 this.$refs.i_name.style.left = this.DIFilmNameLeft + "px";
                 this.$refs.i_name.style.top = this.DIFilmNameTop + "px";
+            },
+            //处理点赞事件
+            handleDZClick () {
+                this.dzIsActive = !this.dzIsActive;
             }
         },
         computed : {
@@ -748,6 +761,22 @@
     transform-origin: right;
     width: 1.65rem !important;
     
+}
+
+.dz_active {
+    animation: dz-anim 0.5s;
+}
+
+//点赞动画
+@keyframes dz-anim {
+    from {
+        transform: scale(1);
+        // background: url("../../assets/iv_movie_praise_f.png");
+    }
+    to {
+        // background: url("../../assets/iv_movie_praise_f.png");
+        transform: scale(1.5);
+    }
 }
 
 
